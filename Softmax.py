@@ -56,13 +56,16 @@ def main():
             return np.random.choice(self.Q, p=self.prob_action)  # choose random action
 
     def experiment(agent, bandit):
+        action_history = []
+        reward_history = []
         for episode in range(N_episodes):
-            action = agent.get_action(bandit, alpha)
+            action = agent.get_action()
             actions_not_taken = agent.Q != action
             reward = bandit.get_reward(bandit_probs)
             agent.update_Q(action, actions_not_taken, reward)
-            
-            
+            action_history.append(action)
+            reward_history.append(reward)
+        return (np.array(action_history), np.array(reward_history))            
 
 main()
 
