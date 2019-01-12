@@ -54,18 +54,29 @@ def main():
         def get_action(self):
             self.softmax()  # get probability distribution
             return np.random.choice(self.Q, p=self.prob_action)  # choose random action
-
-    def experiment(agent, bandit):
+    
+    def experiment(agent, bandit, N_episodes):
         action_history = []
         reward_history = []
         for episode in range(N_episodes):
             action = agent.get_action()
             actions_not_taken = agent.Q != action
-            reward = bandit.get_reward(bandit_probs)
-            agent.update_Q(action, actions_not_taken, reward)
+            reward = bandit.get_reward(int(action))
+            agent.update_Q(int(action), actions_not_taken, reward)
             action_history.append(action)
             reward_history.append(reward)
-        return (np.array(action_history), np.array(reward_history))            
+        return (np.array(action_history), np.array(reward_history))
+
+    N_bandits = len(bandit_probs)
+    reward_history_avg = np.zeros(N_episodes)
+    action_history_sum = ((N_episodes, N_bandits))  # sum action history
+    for i in range(N_experiments):
+        bandit = Bandit(bandit_probs)
+        agent = Agent(bandit, alpha)
+        (action_history, reward_history) = experiment(agent, bandit, N_episodes)  # perform experiment
+        reward_history_avg += reward_history
+        print(reward_history_avg)
+    reward_history_avg /= np.float(N_experiments)
+    print("reward history avg = {}".format(reward_history_avg))
 
 main()
-
