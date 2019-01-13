@@ -8,8 +8,8 @@ def main():
     bandit_probs = [0.10, 0.50, 0.60, 0.80, 0.10, 
                         0.25, 0.60, 0.45, 0.75, 0.65]
     
-    N_experiments = 600  # number of experiments to perform
-    N_episodes = 400  # number of episodes per experiment
+    N_experiments = 100  # number of experiments to perform
+    N_episodes = 300  # number of episodes per experiment
     epsilon = 0.1  # probability of random exploration
 
     class Bandit:
@@ -62,34 +62,35 @@ def main():
         return (np.array(action_history), np.array(reward_history))
 
     N_bandits = len(bandit_probs)
-    print("Running multi-armed bandits with N_bandits = {} and agent epsilon = {}".format(N_bandits, epsilon))
-    avg_reward_history = []
-    # increase training after every set of experiment
-    for ep in range(1, N_episodes):
-        reward_history_avg = np.zeros(ep)  # averaged over every episode
-        action_history_sum = ((ep, N_bandits))  # sum action history
-        for i in range(N_experiments):
-            bandit = Bandit(bandit_probs)  # initialize bandits
-            agent = Agent(bandit, epsilon)  # initialize agent
-            (action_history, reward_history) = experiment(agent, bandit, ep)  # perform experiment
+    # print("Running multi-armed bandits with N_bandits = {} and agent epsilon = {}".format(N_bandits, epsilon))
+    # avg_reward_history = []
+    # # increase training after every set of experiment
+    # for ep in range(1, N_episodes):
+    reward_history_avg = np.zeros(N_episodes)  # averaged over every eN_episodessode
+    action_history_sum = ((N_episodes, N_bandits))  # sum action history
+    for i in range(N_experiments):
+        bandit = Bandit(bandit_probs)  # initialize bandits
+        agent = Agent(bandit, epsilon)  # initialize agent
+        (action_history, reward_history) = experiment(agent, bandit, N_episodes)  # perform experiment
 
-            # sum up rewards for all experiments
-            reward_history_avg += reward_history
-            print(reward_history_avg)
+        # sum up rewards for all experiments
+        reward_history_avg += reward_history
+        print(reward_history_avg)
 
-        reward_history_avg /= np.float(N_experiments)
-        avg_reward_history.append(float(np.sum(reward_history_avg)) / float(len(reward_history_avg)))
-        print("reward history avg = {}".format(reward_history_avg))
+    reward_history_avg /= np.float(N_experiments)
+    print("reward history avg = {}".format(reward_history_avg))
+    # avg_reward_history.append(float(np.sum(reward_history_avg)) / float(len(reward_history_avg)))
+    # print("reward history avg = {}".format(reward_history_avg))
 
-    print(avg_reward_history)
-    print(len(avg_reward_history))
+    # print(avg_reward_history)
+    # print(len(avg_reward_history))
 
-    with open("incremental_result.txt", "w") as f:
-        for item in avg_reward_history:
-            f.write("%s\n" % item)
+    # with open("incremental_result.txt", "w") as f:
+    #     for item in avg_reward_history:
+    #         f.write("%s\n" % item)
 
-    plt.plot(avg_reward_history)
-    plt.ylabel("Avg Reward")
-    plt.show()
+    # plt.plot(avg_reward_history)
+    # plt.ylabel("Avg Reward")
+    # plt.show()
 
 main()
