@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 def main():
 
     # bandit probabilities
@@ -83,7 +82,7 @@ def main():
     print(final_reward_history)
     print(len(final_reward_history))
 
-    with open("incremental_result.txt", "w") as f:
+    with open("data/incremental_result.txt", "w") as f:
         for item in final_reward_history:
             f.write("%s\n" % item)
 

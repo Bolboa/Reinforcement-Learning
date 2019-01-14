@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 def main():
 
     # bandit probabilities
@@ -11,6 +10,7 @@ def main():
     N_experiments = 600  # number of experiments to perform
     N_episodes = 400  # number of episodes per experiment
     epsilon = 0.1  # probability of random exploration
+    alpha = 0.1  # learning rate
 
     class Bandit:
 
@@ -31,6 +31,8 @@ def main():
             self.epsilon = epsilon
             self.k = np.zeros(bandit.N, dtype=np.int)  # number of times action was chosen
             self.Q = np.zeros(bandit.N, dtype=np.float)  # estimated values
+            self.n = 1  # step count
+            self.mean_reward = 0
 
         # Softmax probabilities      
         def softmax(self):
@@ -49,6 +51,30 @@ def main():
             # update actions not chosen
             self.Q[actions_not_taken] = self.Q[actions_not_taken] - \
                 (1./self.k[action]) * (reward - self.Q[action]) * self.prob_action[actions_not_taken]
+
+        def update_Q_mean(self, action, actions_not_taken, reward, alpha=False):
+            self.softmax()  # run softmax on estimates
+            self.k[action] += 1  # increment the number of times an action is chosen
+            self.n += 1  # increment step count
+
+            self.mean_reward = self.mean_reward + (reward - self.mean_reward) / self.n
+
+            if alpha == False:
+                # update action chosen
+                self.Q[action] = self.Q[action] + \
+                    (1./self.k[action]) * (reward - self.mean_reward) * (1 - self.prob_action[action])
+
+                # update actions not chosen
+                self.Q[actions_not_taken] = self.Q[actions_not_taken] - \
+                    (1./self.k[action]) * (reward - self.mean_reward) * self.prob_action[actions_not_taken]
+            else:
+                # update action chosen
+                self.Q[action] = self.Q[action] + \
+                    alpha * (reward - self.mean_reward) * (1 - self.prob_action[action])
+
+                # update actions not chosen
+                self.Q[actions_not_taken] = self.Q[actions_not_taken] - \
+                    alpha * (reward - self.mean_reward) * self.prob_action[actions_not_taken]
 
         def get_action(self, bandit, force_explore=False):
             rand = np.random.random()  # [0.0, 1.0]
@@ -93,7 +119,7 @@ def main():
     print(final_reward_history)
     print(len(final_reward_history))
 
-    with open("softmax_result.txt", "w") as f:
+    with open("data/softmax_result.txt", "w") as f:
         for item in final_reward_history:
             f.write("%s\n" % item)
 
