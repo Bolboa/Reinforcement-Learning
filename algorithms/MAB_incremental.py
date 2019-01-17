@@ -60,12 +60,21 @@ def main():
             reward_history.append(reward)
         return (np.array(action_history), np.array(reward_history))
 
+    def plot_actions(final_action_history_plot):
+        plt.figure(figsize=(18, 12))
+        print(len(final_action_history_plot))
+        for i in range(N_bandits):
+            plt.plot(final_action_history_plot[i])
+        plt.show()
+
     N_bandits = len(bandit_probs)
     final_reward_history = []
+    final_action_history = np.zeros((N_bandits, N_episodes-1))
     # increase training after every set of experiment
     for ep in range(1, N_episodes):
         reward_history_avg = np.zeros(ep)  # averaged over every episode
-        action_history_sum = ((ep, N_bandits))  # sum action history
+        action_history_sum = np.zeros((N_episodes-1, N_bandits))  # sum action history
+        # run experiments
         for i in range(N_experiments):
             bandit = Bandit(bandit_probs)  # initialize bandits
             agent = Agent(bandit, epsilon)  # initialize agent
@@ -73,21 +82,31 @@ def main():
 
             # sum up rewards for all experiments
             reward_history_avg += reward_history
-            print(reward_history_avg)
+
+            # Sum up action history
+            for j, (a) in enumerate(action_history):
+                action_history_sum[j][a] += 1
 
         reward_history_avg /= np.float(N_experiments)
         final_reward_history.append(float(np.sum(reward_history_avg)) / float(len(reward_history_avg)))
-        print("reward history avg = {}".format(reward_history_avg))
+        for b in range(N_bandits):
+            mean_action = 100 * action_history_sum[:, b] / N_experiments
+            final_action_history[b] += mean_action
+        final_action_history /= np.float(ep)
+    
+    final_action_history_plot = final_action_history / np.float(N_episodes)
+    
+    plot_actions(final_action_history_plot)
 
-    print(final_reward_history)
-    print(len(final_reward_history))
+    # print(final_reward_history)
+    # print(len(final_reward_history))
 
-    with open("data/incremental_result.txt", "w") as f:
-        for item in final_reward_history:
-            f.write("%s\n" % item)
+    # with open("data/incremental_result.txt", "w") as f:
+    #     for item in final_reward_history:
+    #         f.write("%s\n" % item)
 
-    plt.plot(final_reward_history)
-    plt.ylabel("Avg Reward")
-    plt.show()
+    # plt.plot(final_reward_history)
+    # plt.ylabel("Avg Reward")
+    # plt.show()
 
 main()

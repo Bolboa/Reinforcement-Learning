@@ -116,16 +116,16 @@ def main():
 
     N_bandits = len(bandit_probs)
     final_reward_history = []
-    final_action_history = np.zeros((N_bandits, N_episodes))
+    final_action_history = np.zeros((N_bandits, N_episodes-1))
     # increase training after every set of experiment
     for ep in range(1, N_episodes):    
-        reward_history_avg = np.zeros(N_episodes)
-        action_history_sum = np.zeros((N_episodes, N_bandits))  # sum action history
-        # Run experiments
+        reward_history_avg = np.zeros(ep)
+        action_history_sum = np.zeros((N_episodes-1, N_bandits))  # sum action history
+        # run experiments
         for i in range(N_experiments):
             bandit = Bandit(bandit_probs)
             agent = Agent(bandit, epsilon)
-            (action_history, reward_history) = experiment(agent, bandit, N_episodes)
+            (action_history, reward_history) = experiment(agent, bandit, ep)
                 
             # Update long-term averages
             reward_history_avg += reward_history
@@ -138,14 +138,15 @@ def main():
         final_reward_history.append(float(np.sum(reward_history_avg)) / float(len(reward_history_avg)))
 
         for b in range(N_bandits):
-            mean_action = 100 * action_history_sum[:,b] / N_experiments
+            mean_action = 100 * action_history_sum[:, b] / N_experiments
             final_action_history[b] += mean_action
+        final_action_history /= np.float(ep)
     
     final_action_history_plot = final_action_history / np.float(N_episodes)
     
     plot_actions(final_action_history_plot)
 
-    #plot_rewards(final_reward_history)
+    # plot_rewards(final_reward_history)
 
 
 main()
