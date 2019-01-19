@@ -144,9 +144,11 @@ def main():
     
     final_action_history_plot = final_action_history / np.float(N_episodes)
     
+    # plot optimal action history
     plot_actions(final_action_history_plot)
 
-    # plot_rewards(final_reward_history)
+    # plot reward history
+    plot_rewards(final_reward_history)
 
 
 main()
