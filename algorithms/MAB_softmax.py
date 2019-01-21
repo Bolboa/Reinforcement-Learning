@@ -1,14 +1,16 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from random import randint
+
 
 def main():
 
     # bandit probabilities
-    bandit_probs = [0.10, 0.50, 0.60, 0.80, 0.10, 
-                        0.25, 0.60, 0.45, 0.75, 0.65]
+    bandit_probs = [0.50, 0.50, 0.50, 0.50, 0.50, 
+                        0.50, 0.50, 0.50, 0.50, 0.50]
 
-    N_experiments = 600  # number of experiments to perform
-    N_episodes = 400  # number of episodes per experiment
+    N_experiments = 100  # number of experiments to perform
+    N_episodes = 100  # number of episodes per experiment
     epsilon = 0.1  # probability of random exploration
     alpha = 0.1  # learning rate
 
@@ -81,11 +83,19 @@ def main():
             if (rand < self.epsilon) or force_explore:
                 action_explore = np.random.randint(bandit.N)  # explore random bandit
                 return action_explore
-            else:
+            elfrom random import randintse:
                 # choose a random value that is a max value.
                 action_greedy = np.random.choice(np.flatnonzero(self.Q == self.Q.max()))
                 return action_greedy
 
+    # Used for non-stationary
+    def random_walk(bandit):
+        random_idx = random.randint(0, bandit.N-1)
+        random_prob = random.uniform(0, 1)
+        new_bandit_probs = bandit_probs
+        new_bandit_probs[random_idx] = random_prob
+        return Bandit(new_bandit_probs)
+        
     def experiment(agent, bandit, N_episodes):
         reward_history = []
         action_history = []
@@ -96,6 +106,7 @@ def main():
             agent.update_Q_mean(action, actions_not_taken, reward, alpha)
             reward_history.append(reward)
             action_history.append(action)
+            bandit = random_walk(bandit)  # random walk (non-stationary)
         return (np.array(action_history), np.array(reward_history))
 
     def plot_actions(final_action_history_plot):

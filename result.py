@@ -17,11 +17,22 @@ def main():
     softmax_result_mean_alpha = open('data/softmax_result_mean_alpha.txt').read().split("\n")
     softmax_result_mean_alpha.pop()
     softmax_result_mean_alpha = list(map(float, softmax_result_mean_alpha))
+
+    incremental_ns = open('data/incremental_ns_result.txt').read().split("\n")
+    incremental_ns.pop()
+    incremental_ns = list(map(float, incremental_ns))
+
+    incremental_ns_alpha_lg = open('data/incremental_ns_alpha_lg.txt').read().split("\n")
+    incremental_ns_alpha_lg.pop()
+    incremental_ns_alpha_lg = list(map(float, incremental_ns_alpha_lg))
+
+    incremental_ns_alpha_sm = open('data/incremental_ns_alpha_sm.txt').read().split("\n")
+    incremental_ns_alpha_sm.pop()
+    incremental_ns_alpha_sm = list(map(float, incremental_ns_alpha_sm))
     
-    plt.plot(incremental_result, label="incremental")
-    plt.plot(softmax_result, label="softmax")
-    plt.plot(softmax_result_mean, label="softmax mean")
-    plt.plot(softmax_result_mean_alpha, label="softmax mean alpha")
+    plt.plot(incremental_ns, label="softmax")
+    plt.plot(incremental_ns_alpha_lg, label="softmax mean")
+    plt.plot(incremental_ns_alpha_sm, label="softmax mean alpha")
     plt.legend(loc="upper left")
     plt.ylabel("Avg Reward")
     plt.show()
