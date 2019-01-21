@@ -117,6 +117,7 @@ def main():
     N_bandits = len(bandit_probs)
     final_reward_history = []
     final_action_history = np.zeros((N_bandits, N_episodes-1))
+    
     # increase training after every set of experiment
     for ep in range(1, N_episodes):    
         reward_history_avg = np.zeros(ep)
