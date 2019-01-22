@@ -62,7 +62,7 @@ def main():
         new_bandit_probs[random_idx] = random_prob
         return Bandit(new_bandit_probs)
     
-    def experiment_incr(agent, bandit, N_episodes):
+    def experiment(agent, bandit, N_episodes):
         action_history = []
         reward_history = []
         total_bandits = []
@@ -76,7 +76,7 @@ def main():
             bandit = random_walk(bandit)
         return (np.array(action_history), np.array(reward_history), total_bandits)
     
-    def experiment_alpha(agent, total_bandits, alpha):
+    def experiment_total(agent, total_bandits, alpha):
         action_history = []
         reward_history = []
         for bandit in total_bandits:
@@ -121,9 +121,9 @@ def main():
             bandit = Bandit(bandit_probs)  # initialize bandits
             agent = Agent(bandit, epsilon)  # initialize agent
             
-            (action_history, reward_history, total_bandits) = experiment_incr(agent, bandit, ep)  # perform experiment
-            (action_history_alpha_lg, reward_history_alpha_lg) = experiment_alpha(agent, total_bandits, 0.1)
-            (action_history_alpha_sm, reward_history_alpha_sm) = experiment_alpha(agent, total_bandits, 0.01)
+            (action_history, reward_history, total_bandits) = experiment(agent, bandit, ep)  # perform experiment
+            (action_history_alpha_lg, reward_history_alpha_lg) = experiment_total(agent, total_bandits, 0.1)
+            (action_history_alpha_sm, reward_history_alpha_sm) = experiment_total(agent, total_bandits, 0.01)
 
 
             # sum up rewards for all experiments

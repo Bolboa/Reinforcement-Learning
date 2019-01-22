@@ -30,9 +30,9 @@ def main():
     incremental_ns_alpha_sm.pop()
     incremental_ns_alpha_sm = list(map(float, incremental_ns_alpha_sm))
     
-    plt.plot(incremental_ns, label="softmax")
-    plt.plot(incremental_ns_alpha_lg, label="softmax mean")
-    plt.plot(incremental_ns_alpha_sm, label="softmax mean alpha")
+    plt.plot(incremental_ns, label="regular increment")
+    plt.plot(incremental_ns_alpha_lg, label="large alpha")
+    plt.plot(incremental_ns_alpha_sm, label="small alpha")
     plt.legend(loc="upper left")
     plt.ylabel("Avg Reward")
     plt.show()
