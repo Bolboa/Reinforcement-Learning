@@ -29,10 +29,17 @@ def main():
     incremental_ns_alpha_sm = open('data/incremental_ns_alpha_sm.txt').read().split("\n")
     incremental_ns_alpha_sm.pop()
     incremental_ns_alpha_sm = list(map(float, incremental_ns_alpha_sm))
+
+    softmax_no_offset_RR = open('data/softmax_no_offset_RR_result.txt').read().split("\n")
+    softmax_no_offset_RR.pop()
+    softmax_no_offset_RR = list(map(float, softmax_no_offset_RR))
+
+    softmax_offset_RR = open('data/softmax_offset_RR_result.txt').read().split("\n")
+    softmax_offset_RR.pop()
+    softmax_offset_RR = list(map(float, softmax_offset_RR))
     
-    plt.plot(incremental_ns, label="regular increment")
-    plt.plot(incremental_ns_alpha_lg, label="large alpha")
-    plt.plot(incremental_ns_alpha_sm, label="small alpha")
+    plt.plot(softmax_offset_RR, label="offset")
+    plt.plot(softmax_no_offset_RR, label="no offset")
     plt.legend(loc="upper left")
     plt.ylabel("Avg Reward")
     plt.show()
