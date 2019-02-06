@@ -9,6 +9,7 @@ verify_ssl = true
 numpy = "*"
 pylint = "*"
 matplotlib = "*"
+random = "*"
 
 [requires]
 python_version = "3.7"

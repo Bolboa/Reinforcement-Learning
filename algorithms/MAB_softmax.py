@@ -1,16 +1,16 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from random import randint
+import random
 
 
 def main():
 
     # bandit probabilities
-    bandit_probs = [0.50, 0.50, 0.50, 0.50, 0.50, 
-                        0.50, 0.50, 0.50, 0.50, 0.50]
+    bandit_probs = [0.10, 0.10, 0.10, 0.80, 0.10,
+                    0.10, 0.10, 0.10, 0.75, 0.10]
 
-    N_experiments = 100  # number of experiments to perform
-    N_episodes = 100  # number of episodes per experiment
+    N_experiments = 400  # number of experiments to perform
+    N_episodes = 200  # number of episodes per experiment
     epsilon = 0.1  # probability of random exploration
     alpha = 0.1  # learning rate
 
@@ -54,21 +54,37 @@ def main():
             self.Q[actions_not_taken] = self.Q[actions_not_taken] - \
                 (1./self.k[action]) * (reward - self.Q[action]) * self.prob_action[actions_not_taken]
 
-        def update_Q_mean(self, action, actions_not_taken, reward, alpha=False):
+        def update_Q_mean(self, action, actions_not_taken, reward):
             self.softmax()  # run softmax on estimates
             self.k[action] += 1  # increment the number of times an action is chosen
             self.n += 1  # increment step count
 
             self.mean_reward = self.mean_reward + (reward - self.mean_reward) / self.n
 
-            if alpha == False:
+            # update action chosen
+            self.Q[action] = self.Q[action] + \
+                (1./self.k[action]) * (reward - self.mean_reward) * (1 - self.prob_action[action])
+
+            # update actions not chosen
+            self.Q[actions_not_taken] = self.Q[actions_not_taken] - \
+                (1./self.k[action]) * (reward - self.mean_reward) * self.prob_action[actions_not_taken]
+                
+        
+        def update_Q_mean_alpha(self, action, actions_not_taken, reward, alpha=0.1, offset=False):
+            self.softmax()  # run softmax on estimates
+            self.k[action] += 1  # increment the number of times an action is chosen
+            self.n += 1  # increment step count
+
+            self.mean_reward = self.mean_reward + 0.1 * (reward - self.mean_reward)
+
+            if not offset:
                 # update action chosen
                 self.Q[action] = self.Q[action] + \
-                    (1./self.k[action]) * (reward - self.mean_reward) * (1 - self.prob_action[action])
+                    alpha * (reward - self.mean_reward)
 
                 # update actions not chosen
                 self.Q[actions_not_taken] = self.Q[actions_not_taken] - \
-                    (1./self.k[action]) * (reward - self.mean_reward) * self.prob_action[actions_not_taken]
+                    alpha * (reward - self.mean_reward)
             else:
                 # update action chosen
                 self.Q[action] = self.Q[action] + \
@@ -78,12 +94,13 @@ def main():
                 self.Q[actions_not_taken] = self.Q[actions_not_taken] - \
                     alpha * (reward - self.mean_reward) * self.prob_action[actions_not_taken]
 
+
         def get_action(self, bandit, force_explore=False):
             rand = np.random.random()  # [0.0, 1.0]
             if (rand < self.epsilon) or force_explore:
                 action_explore = np.random.randint(bandit.N)  # explore random bandit
                 return action_explore
-            elfrom random import randintse:
+            else:
                 # choose a random value that is a max value.
                 action_greedy = np.random.choice(np.flatnonzero(self.Q == self.Q.max()))
                 return action_greedy
@@ -103,7 +120,7 @@ def main():
             action = agent.get_action(bandit)
             actions_not_taken = agent.Q != action
             reward = bandit.get_reward(action)
-            agent.update_Q_mean(action, actions_not_taken, reward, alpha)
+            agent.update_Q_mean_alpha(action, actions_not_taken, reward, alpha, False)
             reward_history.append(reward)
             action_history.append(action)
             bandit = random_walk(bandit)  # random walk (non-stationary)
@@ -116,8 +133,8 @@ def main():
             plt.plot(final_action_history_plot[i])
         plt.show()
 
-    def plot_rewards(final_reward_history):
-        with open("data/softmax_result.txt", "w") as f:
+    def plot_rewards(final_reward_history, path):
+        with open(path, "w") as f:
             for item in final_reward_history:
                 f.write("%s\n" % item)
 
@@ -157,10 +174,10 @@ def main():
     final_action_history_plot = final_action_history / np.float(N_episodes)
     
     # plot optimal action history
-    plot_actions(final_action_history_plot)
+    #plot_actions(final_action_history_plot)
 
     # plot reward history
-    plot_rewards(final_reward_history)
+    plot_rewards(final_reward_history, "../data/softmax_no_offset_RR_result.txt")
 
 
 main()
